@@ -2,26 +2,12 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: [true, "User Name is required"],
-      trim: true,
-      minLength: 2,
-      maxLength: 50,
-    },
-    email: {
-      type: String,
-      required: [true, "User Email is required"],
-      unique: true,
-      trim: true,
-      lowercase: true,
-      match: [/\S+@\S+\.\S+/, "Please fill a valid email address"],
-    },
-    password: {
-      type: String,
-      required: [true, "User Password is required"],
-      minLength: 6,
-    },
+    name: { type: String, required: [true, "User Name is required"] },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, minLength: 6 },
+    googleId: { type: String, unique: true },
+    avatar: { type: String },
+    allProperties: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
   },
   { timestamps: true }
 );
