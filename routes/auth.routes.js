@@ -2,11 +2,18 @@ import { Router } from "express";
 import passport from "passport";
 
 import "../config/google.js";
-import { googleAuth, signIn, signOut } from "../controllers/auth.controller.js";
+import {
+  googleAuth,
+  signIn,
+  signOut,
+  signUp,
+} from "../controllers/auth.controller.js";
 
 const authRouter = Router();
 
 authRouter.post("/sign-in", signIn);
+
+authRouter.post("/sign-up", signUp);
 
 authRouter.post("/sign-out", signOut);
 
