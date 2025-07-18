@@ -30,14 +30,16 @@ export const signIn = async (req, res, next) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
+      maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.status(200).json({
       success: true,
       message: "Login successful",
-      data: user,
+      user: { email: user.email, name: user.name },
     });
   } catch (error) {
     next(error);
@@ -85,14 +87,14 @@ export const signUp = async (req, res, next) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // set true in production with HTTPS
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
     });
 
     res.status(201).json({
       success: true,
       message: "Successfully created account",
-      data: newUsers[0],
+      user: { email: newUsers[0].email, name: newUsers[0].name },
     });
   } catch (error) {
     await session.abortTransaction();
@@ -102,8 +104,13 @@ export const signUp = async (req, res, next) => {
 };
 
 export const signOut = (req, res) => {
-  res.clearCookie("token");
-  res.json({ message: "Logged out" });
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+  res.status(200).json({ message: "Logged out" });
 };
 
 export const googleAuth = (req, res) => {
@@ -113,9 +120,18 @@ export const googleAuth = (req, res) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false, // set true in production with HTTPS
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
+    path: "/",
+    maxAge: 1000 * 60 * 60 * 24,
   });
 
   res.redirect("http://localhost:3000/dashboard");
+};
+
+export const getUser = (req, res) => {
+  res.status(200).json({
+    success: true,
+    user: req.user,
+  });
 };
