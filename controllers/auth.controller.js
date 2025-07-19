@@ -39,7 +39,7 @@ export const signIn = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Login successful",
-      user: { email: user.email, name: user.name },
+      user,
     });
   } catch (error) {
     next(error);
@@ -94,7 +94,7 @@ export const signUp = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: "Successfully created account",
-      user: { email: newUsers[0].email, name: newUsers[0].name },
+      user: newUsers[0],
     });
   } catch (error) {
     await session.abortTransaction();
