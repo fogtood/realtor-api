@@ -28,18 +28,11 @@ export const signIn = async (req, res, next) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 1000 * 60 * 60 * 24,
-    });
-
     res.status(200).json({
       success: true,
       message: "Login successful",
       user,
+      token,
     });
   } catch (error) {
     next(error);
@@ -85,16 +78,11 @@ export const signUp = async (req, res, next) => {
     await session.commitTransaction();
     session.endSession();
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    });
-
     res.status(201).json({
       success: true,
       message: "Successfully created account",
       user: newUsers[0],
+      token,
     });
   } catch (error) {
     await session.abortTransaction();
@@ -104,12 +92,6 @@ export const signUp = async (req, res, next) => {
 };
 
 export const signOut = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-  });
   res.status(200).json({ message: "Logged out" });
 };
 
@@ -118,15 +100,9 @@ export const googleAuth = (req, res) => {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 1000 * 60 * 60 * 24,
-  });
-
-  res.redirect("http://localhost:3000/dashboard");
+  res.redirect(
+    `http://localhost:3000/api/auth/google/callback?token=${token}&userId=${req.user._id}`
+  );
 };
 
 export const getUser = (req, res) => {
